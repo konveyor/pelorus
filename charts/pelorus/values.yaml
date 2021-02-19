@@ -24,7 +24,39 @@ exporters:
     extraEnv:
     - name: APP_FILE
       value: deploytime/app.py
+    - name: LOG_LEVEL
+      value: DEBUG
     source_ref: master
-    source_url: https://github.com/redhat-cop/pelorus.git
+    source_url: https://github.com/konveyor/pelorus.git
+  - app_name: committime-generic
+    env_from_secrets:
+    - github-secret
+    - mongodb-build-webhook
+    source_context_dir: exporters/
+    extraEnv:
+    - name: APP_FILE
+      value: committime/app.py
+    - name: LOG_LEVEL
+      value: DEBUG
+    - name: PROVIDER
+      value: "webhook"
+    source_ref: master
+    source_url: https://github.com/konveyor/pelorus.git
+
+webhooks:
+  instances:
+  - app_name: build-webhook
+    source_context_dir: webhooks/
+    extraEnv:
+    - name: APP_FILE
+      value: build-webhook/app.py
+    - name: LOG_LEVEL
+      value: DEBUG
+    source_ref: master
+    source_url: https://github.com/konveyor/pelorus.git
+    mongodb:
+      namespace: openshift
+      imagestream: "mongodb:3.6"
+      memory_limit: 512Mi
 
 snapshot_schedule: "@monthly"
